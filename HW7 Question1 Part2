@@ -1,0 +1,59 @@
+import numpy as np
+import scipy
+from scipy import signal
+import matplotlib.pyplot as plt
+import math
+import warnings
+warnings.filterwarnings('ignore')
+
+width = []
+for i in range (1023):
+    width.append(i)
+
+n = np.linspace(0,511,512)
+x = []
+h = []
+for i in range(len(n)):
+    x.append((0.98**(n[i])*math.sin(math.pi*n[i]/24)))
+    h.append((n[i]**2*(.99)**(n[i])*math.cos(math.pi*n[i]/48)))
+
+x = np.array(x)
+h = np.array(h)
+c = np.convolve(x,h)
+
+#Second Graph (Part 2)
+width2 = []
+for i in range (1024):
+    width2.append(i)
+
+x2 = []
+h2 = []
+for i in range(len(n)):
+    x2.append((0.98**(n[i])*math.sin(math.pi*n[i]/24)))
+    h2.append((n[i]**2*(.99)**(n[i])*math.cos(math.pi*n[i]/48)))
+
+for i in range(len(n)):
+    x2.append(0)
+    h2.append(0)
+
+
+x2 = np.array(x2)
+h2 = np.array(h2)
+
+x_fft = np.fft.fft(x2)/1024
+h_fft = np.fft.fft(h2)/1024
+
+x_mult_h = x_fft * h_fft
+
+y = np.fft.ifft(x_mult_h)
+
+plt.plot(width, c, 'g')
+markerline, stemlines, baseline = plt.stem(width, c, 'g')
+
+plt.plot(width2, y, 'b')
+markerline, stemlines, baseline = plt.stem(width2, y, 'b')
+
+plt.ylabel('Amplitude')
+plt.xlabel('n value')
+plt.title('Direct Con is Green, FFT Conv is Blue')
+plt.show()
